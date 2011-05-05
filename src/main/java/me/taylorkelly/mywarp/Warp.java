@@ -190,4 +190,13 @@ public class Warp {
             return location;
         }
     }
+
+    public updateToPlayerLocation(Player player) {
+        this.world = player.getWorld().getName();
+        this.x = player.getLocation().getX();
+        this.y = player.getLocation().getBlockY();
+        this.z = player.getLocation().getZ();
+        this.yaw = Math.round(player.getLocation().getYaw()) % 360;
+        this.pitch = Math.round(player.getLocation().getPitch()) % 360;
+    }
 }

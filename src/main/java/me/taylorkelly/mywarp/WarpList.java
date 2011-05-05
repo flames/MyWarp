@@ -393,7 +393,7 @@ public class WarpList {
 
     public void point(String name, Player player) {
         MatchList matches = this.getMatches(name, player);
-        name = matches.getMatch(name);
+        name = matches.getMatch(name); 
         if (warpList.containsKey(name)) {
             Warp warp = warpList.get(name);
             if (warp.playerCanWarp(player)) {
@@ -417,6 +417,23 @@ public class WarpList {
             admin.sendMessage(ChatColor.AQUA + "Successfully warped " + invitee.getName());
         } else {
             admin.sendMessage(ChatColor.RED + "No such warp '" + name + "'");
+        }
+    }
+
+    public void updatePosition(String name, Player player) {
+        MatchList matches = this.getMatches(name, player);
+        name = matches.getMatch(name);
+        if (warpList.containsKey(name)) {
+            Warp warp = warpList.get(name);
+            if (warp.playerCanModify(player)) {
+                warp.updateToPlayerLocation(player);
+                WarpDataSource.updatePosition(warp);
+                player.sendMessage(ChatColor.AQUA + "You have updated '" + name + "' to your current position");
+            } else {
+                player.sendMessage(ChatColor.RED + "You do not have permission to change '" + name + "'");
+            }
+        } else {
+            player.sendMessage(ChatColor.RED + "No such warp '" + name + "'");
         }
     }
 }

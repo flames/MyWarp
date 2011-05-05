@@ -291,4 +291,35 @@ public class WarpDataSource {
         }
     }
 
+    public static void updatePosition(Warp warp) {
+        PreparedStatement ps = null;
+        ResultSet set = null;
+        Logger log = Logger.getLogger("Minecraft");
+        try {
+            Connection conn = ConnectionManager.getConnection();
+
+            ps = conn.prepareStatement("UPDATE warpTable SET x = ?, y = ?, z = ? WHERE id = ?");
+            ps.setDouble(1, warp.x);
+            ps.setInt(2, warp.y);
+            ps.setDouble(3, warp.z);
+            ps.setInt(4, warp.index);
+            ps.executeUpdate();
+            conn.commit();
+
+        } catch (SQLException ex) {
+            log.log(Level.SEVERE, "[MYWARP]: Warp Creator Exception", ex);
+        } finally {
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+                if (set != null) {
+                    set.close();
+                }
+            } catch (SQLException ex) {
+                log.log(Level.SEVERE, "[MYWARP]: Warp Creator Exception (on close)", ex);
+            }
+        }
+    }
+
 }
