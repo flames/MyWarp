@@ -298,11 +298,13 @@ public class WarpDataSource {
         try {
             Connection conn = ConnectionManager.getConnection();
 
-            ps = conn.prepareStatement("UPDATE warpTable SET x = ?, y = ?, z = ? WHERE id = ?");
+            ps = conn.prepareStatement("UPDATE warpTable SET x = ?, y = ?, z = ?, pitch = ?, yaw = ? WHERE id = ?");
             ps.setDouble(1, warp.x);
             ps.setInt(2, warp.y);
             ps.setDouble(3, warp.z);
-            ps.setInt(4, warp.index);
+            ps.setInt(4, warp.yaw);
+            ps.setInt(5, warp.pitch);
+            ps.setInt(6, warp.index);
             ps.executeUpdate();
             conn.commit();
 
