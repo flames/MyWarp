@@ -17,6 +17,7 @@ public class WarpPermissions {
     }
     private static PermissionHandler handler;
     private static Plugin permissionPlugin;
+    private static final WarpLogger logger = WarpLogger.getLogger();
 
     public static void initialize(Server server) {
     	Plugin permissionsEx = server.getPluginManager().getPlugin("PermissionsEx");
@@ -27,12 +28,12 @@ public class WarpPermissions {
             permissionPlugin = permissionsEx;
             handler = PermissionHandler.PERMISSIONSEX;
             String version = permissionsEx.getDescription().getVersion();
-            WarpLogger.info("Permissions enabled using: PermissionsEx v" + version);
+            logger.info("Permissions enabled using: PermissionsEx v" + version);
         } else if (groupManager != null) {
             permissionPlugin = groupManager;
             handler = PermissionHandler.GROUPMANAGER;
             String version = groupManager.getDescription().getVersion();
-            WarpLogger.info("Permissions enabled using: GroupManager v" + version);
+            logger.info("Permissions enabled using: GroupManager v" + version);
         } else if (permissions != null) {
             permissionPlugin = permissions;
             String version = permissions.getDescription().getVersion();
@@ -41,17 +42,17 @@ public class WarpPermissions {
             } else {
             	handler = PermissionHandler.PERMISSIONS;
             }
-            WarpLogger.info("Permissions enabled using: Permissions v" + version);
+            logger.info("Permissions enabled using: Permissions v" + version);
         } else {
             handler = PermissionHandler.NONE;
-            WarpLogger.warning("A permission plugin isn't loaded.");
+            logger.warning("A permission plugin isn't loaded.");
         }
     }
 
     public static boolean permission(Player player, String permission, boolean defaultPerm) {
         switch (handler) {
             case PERMISSIONSEX:
-                return ((PermissionsEx) permissionPlugin).getPermissionManager().has(player, permission);
+                return PermissionsEx.getPermissionManager().has(player, permission);
             case PERMISSIONS3:
             	return ((Permissions) permissionPlugin).getHandler().has(player, permission);
             case PERMISSIONS:

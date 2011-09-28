@@ -7,6 +7,7 @@ import java.sql.SQLException;
 
 public class ConnectionManager {
     private static Connection conn;
+    private static final WarpLogger logger = WarpLogger.getLogger();
         
     public static Connection initialize() {
         try {
@@ -22,9 +23,9 @@ public class ConnectionManager {
         		return conn;
         	}
         } catch (SQLException ex) {
-            WarpLogger.severe("SQL exception on initialize", ex);
+            logger.severe("SQL exception on initialize", ex);
         } catch (ClassNotFoundException ex) {
-            WarpLogger.severe("You need the SQLite/MySQL library.", ex);
+            logger.severe("You need the SQLite/MySQL library.", ex);
         }
         return conn;
     }
@@ -40,7 +41,7 @@ public class ConnectionManager {
                 conn.close();
                 conn = null;
             } catch (SQLException ex) {
-                WarpLogger.severe("Error on Connection close", ex);
+                logger.severe("Error on Connection close", ex);
             }
         }
     }

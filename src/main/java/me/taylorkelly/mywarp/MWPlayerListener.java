@@ -1,7 +1,5 @@
 package me.taylorkelly.mywarp;
 
-import org.bukkit.Location;
-import org.bukkit.Server;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.block.Block;
