@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import me.taylorkelly.mywarp.griefcraft.Updater;
 
@@ -28,7 +27,7 @@ public class MyWarp extends JavaPlugin {
     public String name;
     public String version;
     private Updater updater;
-    public static final Logger log = Logger.getLogger("Minecraft");
+    public static final WarpLogger logger = WarpLogger.getLogger();
 
     @Override
     public void onDisable() {
@@ -47,7 +46,7 @@ public class MyWarp extends JavaPlugin {
 
         Connection conn = ConnectionManager.initialize();
         if (conn == null) {
-            log.log(Level.SEVERE, "[MYWARP] Could not establish SQL connection. Disabling MyWarp");
+            logger.log(Level.SEVERE, "[MYWARP] Could not establish SQL connection. Disabling MyWarp");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
@@ -67,7 +66,7 @@ public class MyWarp extends JavaPlugin {
          	getServer().getPluginManager().registerEvent(Event.Type.PLAYER_TELEPORT, playerListener, Priority.Monitor, this);
         }
 
-        WarpLogger.info(name + " " + version + " enabled");
+        logger.info(name + " " + version + " enabled");
     }
 
 
@@ -83,7 +82,7 @@ public class MyWarp extends JavaPlugin {
     private boolean sqlCheck() {
         Connection conn = ConnectionManager.initialize();
         if (conn == null) {
-            WarpLogger.severe("Could not establish SQL connection. Disabling MyWarp");
+            logger.severe("Could not establish SQL connection. Disabling MyWarp");
             getServer().getPluginManager().disablePlugin(this);
             return false;
         } 
@@ -100,7 +99,7 @@ public class MyWarp extends JavaPlugin {
         try {
             newDatabase.createNewFile();
         } catch (IOException ex) {
-        	WarpLogger.severe("Could not create new database file", ex);
+        	logger.severe("Could not create new database file", ex);
         }
         copyFile(oldDatabase, newDatabase);
     }
@@ -123,7 +122,7 @@ public class MyWarp extends JavaPlugin {
                 to.write(buffer, 0, bytesRead);
             }
         } catch (IOException ex) {
-            Logger.getLogger(MyWarp.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
         } finally {
             if (from != null) {
                 try {
@@ -140,15 +139,19 @@ public class MyWarp extends JavaPlugin {
         }
     }
     
-    private boolean warning;
 
     public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
         String[] split = args;
         String commandName = command.getName().toLowerCase();
-
+        String joinargs = "";
+        for (String part : args)
+        {
+        	joinargs +=";"+part;
+        }
+        logger.info("Executed command: " + command.getName() + " with Args: " + joinargs);
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            if (commandName.equals("warp") || commandName.equals("mywarp") || commandName.equals("mw")) {
+            if (commandName.equals("warp")) {
             	/**
                  *  /warp reload
                  */
@@ -451,11 +454,11 @@ public class MyWarp extends JavaPlugin {
     }
 
     public static void severe(String string, Exception ex) {
-        log.log(Level.SEVERE, "[MYHOME]" + string, ex);
+        logger.log(Level.SEVERE, "[MYHOME]" + string, ex);
 
     }
 
     public static void severe(String string) {
-        log.log(Level.SEVERE, "[MYHOME]" + string);
+        logger.log(Level.SEVERE, "[MYHOME]" + string);
     }
 }

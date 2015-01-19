@@ -9,10 +9,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.io.File;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class WarpDataSource {
+	private static final WarpLogger logger = WarpLogger.getLogger();
 	public final static String sqlitedb = "/warps.db";
     private final static String WARP_TABLE = "CREATE TABLE `warpTable` ("
 	    + "`id` INTEGER PRIMARY KEY,"
@@ -63,9 +62,9 @@ public class WarpDataSource {
                 Warp warp = new Warp(index, name, creator, world, x, y, z, yaw, pitch, publicAll, permissions, welcomeMessage);
                 ret.put(name, warp);
             }
-            WarpLogger.info("[MYWARP]: " + size + " warps loaded");
+            logger.info("[MYWARP]: " + size + " warps loaded");
         } catch (SQLException ex) {
-            WarpLogger.severe("[MYWARP]: Warp Load Exception");
+            logger.severe("[MYWARP]: Warp Load Exception");
         } finally {
             try {
                 if (statement != null)
@@ -73,7 +72,7 @@ public class WarpDataSource {
                 if (set != null)
                     set.close();
             } catch (SQLException ex) {
-            	WarpLogger.severe("[MYWARP]: Warp Load Exception (on close)");
+            	logger.severe("[MYWARP]: Warp Load Exception (on close)");
             }
         }
         return ret;
@@ -90,16 +89,14 @@ public class WarpDataSource {
                 return false;
             return true;
         } catch (SQLException ex) {
-            Logger log = Logger.getLogger("Minecraft");
-            WarpLogger.severe("[MYWARP]: Table Check Exception", ex);
+            logger.severe("[MYWARP]: Table Check Exception", ex);
             return false;
         } finally {
             try {
                 if (rs != null)
                     rs.close();
             } catch (SQLException ex) {
-                Logger log = Logger.getLogger("Minecraft");
-                WarpLogger.severe("[MYWARP]: Table Check SQL Exception (on closing)");
+                logger.severe("[MYWARP]: Table Check SQL Exception (on closing)");
             }
         }
     }
@@ -107,7 +104,7 @@ public class WarpDataSource {
     private static void createTable() {
     	Statement st = null;
     	try {
-    		WarpLogger.info("[MyWarp] Creating Database...");
+    		logger.info("[MyWarp] Creating Database...");
     		Connection conn = ConnectionManager.getConnection();
     		st = conn.createStatement();
     		st.executeUpdate(WARP_TABLE);
@@ -116,7 +113,7 @@ public class WarpDataSource {
     		if(WarpSettings.usemySQL){ 
     			// We need to set auto increment on SQL.
     			String sql = "ALTER TABLE `warpTable` CHANGE `id` `id` INT NOT NULL AUTO_INCREMENT ";
-    			WarpLogger.info("[MyWarp] Modifying database for MySQL support");
+    			logger.info("[MyWarp] Modifying database for MySQL support");
     			st = conn.createStatement();
     			st.executeUpdate(sql);
     			conn.commit();
@@ -124,10 +121,10 @@ public class WarpDataSource {
     			// Check for old warps.db and import to mysql
     			File sqlitefile = new File(WarpSettings.dataDir.getAbsolutePath() + sqlitedb);
     			if (!sqlitefile.exists()) {
-    				WarpLogger.info("[MyWarp] Could not find old " + sqlitedb);
+    				logger.info("[MyWarp] Could not find old " + sqlitedb);
     				return;
     			} else {
-	    			WarpLogger.info("[MyWarp] Trying to import warps from warps.db");
+	    			logger.info("[MyWarp] Trying to import warps from warps.db");
 	        		Class.forName("org.sqlite.JDBC");
 	        		Connection sqliteconn = DriverManager.getConnection("jdbc:sqlite:" + WarpSettings.dataDir.getAbsolutePath() + sqlitedb);
 	        		sqliteconn.setAutoCommit(false);
@@ -152,10 +149,10 @@ public class WarpDataSource {
 	        			Warp warp = new Warp(index, name, creator, world, x, y, z, yaw, pitch, publicAll, permissions, welcomeMessage);
 	        			addWarp(warp);
 	        		}
-	        		WarpLogger.info("[MyWarp] Imported " + size + " warps from " + sqlitedb);
-	        		WarpLogger.info("[MyWarp] Renaming " + sqlitedb + " to " + sqlitedb + ".old");
+	        		logger.info("[MyWarp] Imported " + size + " warps from " + sqlitedb);
+	        		logger.info("[MyWarp] Renaming " + sqlitedb + " to " + sqlitedb + ".old");
 	        		if (!sqlitefile.renameTo(new File(WarpSettings.dataDir.getAbsolutePath(), sqlitedb + ".old"))) {
-	    				WarpLogger.warning("[MyWarp] Failed to rename " + sqlitedb + "! Please rename this manually!");
+	    				logger.warning("[MyWarp] Failed to rename " + sqlitedb + "! Please rename this manually!");
 	    			}
 	        		if (slstatement != null) {
         				slstatement.close();
@@ -170,23 +167,22 @@ public class WarpDataSource {
     			}
     		}
     	} catch (SQLException e) {
-    		WarpLogger.severe("[MyWarp] Create Table Exception", e);
+    		logger.severe("[MyWarp] Create Table Exception", e);
     	} catch (ClassNotFoundException e) {
-            WarpLogger.severe("[MyWarp] You need the SQLite library.", e);
+            logger.severe("[MyWarp] You need the SQLite library.", e);
     	} finally {
     		try {
     			if (st != null) {
     				st.close();
     			}
     		} catch (SQLException e) {
-    			WarpLogger.severe("[MyWarp] Could not create the table (on close)");
+    			logger.severe("[MyWarp] Could not create the table (on close)");
     		}
     	}
     }
 
     public static void addWarp(Warp warp) {
         PreparedStatement ps = null;
-        Logger log = Logger.getLogger("Minecraft");
         try {
             Connection conn = ConnectionManager.getConnection();
 
@@ -207,14 +203,14 @@ public class WarpDataSource {
             ps.executeUpdate();
             conn.commit();
         } catch (SQLException ex) {
-            WarpLogger.severe("[MYWARP]: Warp Insert Exception", ex);
+            logger.severe("[MYWARP]: Warp Insert Exception", ex);
         } finally {
             try {
                 if (ps != null) {
                     ps.close();
                 }
             } catch (SQLException ex) {
-                WarpLogger.severe("[MYWARP]: Warp Insert Exception (on close)", ex);
+                logger.severe("[MYWARP]: Warp Insert Exception (on close)", ex);
             }
         }
     }
@@ -222,7 +218,6 @@ public class WarpDataSource {
     public static void deleteWarp(Warp warp) {
         PreparedStatement ps = null;
         ResultSet set = null;
-        Logger log = Logger.getLogger("Minecraft");
         try {
             Connection conn = ConnectionManager.getConnection();
 
@@ -231,17 +226,14 @@ public class WarpDataSource {
             ps.executeUpdate();
             conn.commit();
         } catch (SQLException ex) {
-            WarpLogger.severe("[MYWARP]: Warp Delete Exception", ex);
+            logger.severe("[MYWARP]: Warp Delete Exception", ex);
         } finally {
             try {
                 if (ps != null) {
                     ps.close();
                 }
-                if (set != null) {
-                    set.close();
-                }
             } catch (SQLException ex) {
-                WarpLogger.severe("[MYWARP]: Warp Delete Exception (on close)", ex);
+                logger.severe("[MYWARP]: Warp Delete Exception (on close)", ex);
             }
         }
     }
@@ -249,7 +241,6 @@ public class WarpDataSource {
     public static void publicizeWarp(Warp warp, boolean publicAll) {
         PreparedStatement ps = null;
         ResultSet set = null;
-        Logger log = Logger.getLogger("Minecraft");
         try {
             Connection conn = ConnectionManager.getConnection();
 
@@ -259,17 +250,14 @@ public class WarpDataSource {
             ps.executeUpdate();
             conn.commit();
         } catch (SQLException ex) {
-            WarpLogger.severe("[MYWARP]: Warp Publicize Exception", ex);
+            logger.severe("[MYWARP]: Warp Publicize Exception", ex);
         } finally {
             try {
                 if (ps != null) {
                     ps.close();
                 }
-                if (set != null) {
-                    set.close();
-                }
             } catch (SQLException ex) {
-                WarpLogger.severe("[MYWARP]: Warp Publicize Exception (on close)", ex);
+                logger.severe("[MYWARP]: Warp Publicize Exception (on close)", ex);
             }
         }
     }
@@ -277,7 +265,6 @@ public class WarpDataSource {
     public static void updatePermissions(Warp warp) {
         PreparedStatement ps = null;
         ResultSet set = null;
-        Logger log = Logger.getLogger("Minecraft");
         try {
             Connection conn = ConnectionManager.getConnection();
 
@@ -287,17 +274,14 @@ public class WarpDataSource {
             ps.executeUpdate();
             conn.commit();
         } catch (SQLException ex) {
-            WarpLogger.severe("[MYWARP]: Warp Permissions Exception", ex);
+            logger.severe("[MYWARP]: Warp Permissions Exception", ex);
         } finally {
             try {
                 if (ps != null) {
                     ps.close();
                 }
-                if (set != null) {
-                    set.close();
-                }
             } catch (SQLException ex) {
-                WarpLogger.severe("[MYWARP]: Warp Permissions Exception (on close)", ex);
+                logger.severe("[MYWARP]: Warp Permissions Exception (on close)", ex);
             }
         }
     }
@@ -305,7 +289,6 @@ public class WarpDataSource {
     public static void updateCreator(Warp warp) {
         PreparedStatement ps = null;
         ResultSet set = null;
-        Logger log = Logger.getLogger("Minecraft");
         try {
             Connection conn = ConnectionManager.getConnection();
 
@@ -316,17 +299,14 @@ public class WarpDataSource {
             conn.commit();
 
         } catch (SQLException ex) {
-            WarpLogger.severe("[MYWARP]: Warp Creator Exception", ex);
+            logger.severe("[MYWARP]: Warp Creator Exception", ex);
         } finally {
             try {
                 if (ps != null) {
                     ps.close();
                 }
-                if (set != null) {
-                    set.close();
-                }
             } catch (SQLException ex) {
-                WarpLogger.severe("[MYWARP]: Warp Creator Exception (on close)", ex);
+                logger.severe("[MYWARP]: Warp Creator Exception (on close)", ex);
             }
         }
     }
@@ -334,7 +314,6 @@ public class WarpDataSource {
     public static void updateWelcomeMessage(Warp warp) {
         PreparedStatement ps = null;
         ResultSet set = null;
-        Logger log = Logger.getLogger("Minecraft");
         try {
             Connection conn = ConnectionManager.getConnection();
 
@@ -345,17 +324,14 @@ public class WarpDataSource {
             conn.commit();
 
         } catch (SQLException ex) {
-            WarpLogger.severe("[MYWARP]: Warp Creator Exception", ex);
+            logger.severe("[MYWARP]: Warp Creator Exception", ex);
         } finally {
             try {
                 if (ps != null) {
                     ps.close();
                 }
-                if (set != null) {
-                    set.close();
-                }
             } catch (SQLException ex) {
-                WarpLogger.severe("[MYWARP]: Warp Creator Exception (on close)", ex);
+                logger.severe("[MYWARP]: Warp Creator Exception (on close)", ex);
             }
         }
     }
@@ -378,7 +354,7 @@ public class WarpDataSource {
     		statement.executeQuery(test);
     		statement.close();
     	} catch(SQLException ex) {
-    		WarpLogger.info("[MYWARP]: Updating database");
+    		logger.info("[MYWARP]: Updating database");
     		// Failed the test so we need to execute the updates
     		try {
     			String[] query;
@@ -396,7 +372,7 @@ public class WarpDataSource {
     			conn.commit();
     			sqlst.close();
     		} catch (SQLException exc) {
-    			WarpLogger.severe("[MYWARP]: Failed to update the database to the new version - ", exc);
+    			logger.severe("[MYWARP]: Failed to update the database to the new version - ", exc);
     			ex.printStackTrace();
     		}	
     	}
@@ -405,7 +381,7 @@ public class WarpDataSource {
     public static void updateFieldType(String field, String type) {
     	try {
     		if (!WarpSettings.usemySQL) return;
-    		WarpLogger.info("[MYWARP]: Updating database");
+    		logger.info("[MYWARP]: Updating database");
     		
     		Connection conn = ConnectionManager.getConnection();
     		DatabaseMetaData meta = conn.getMetaData();
@@ -427,7 +403,7 @@ public class WarpDataSource {
     		}
     		colRS.close();
     	} catch(SQLException ex) {
-    		WarpLogger.severe("[MYWARP]: Failed to update the database to the new version - ", ex);
+    		logger.severe("[MYWARP]: Failed to update the database to the new version - ", ex);
     		ex.printStackTrace();
     	}
     }
