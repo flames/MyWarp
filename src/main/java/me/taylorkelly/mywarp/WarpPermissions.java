@@ -3,9 +3,9 @@ package me.taylorkelly.mywarp;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 import com.nijikokun.bukkit.Permissions.Permissions;
 import org.anjocaido.groupmanager.GroupManager;
-
+ 
 import me.taylorkelly.mywarp.WarpLogger;
-
+  
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -125,6 +125,10 @@ public class WarpPermissions {
     public static boolean compass(Player player) {
             return permission(player, "mywarp.warp.basic.compass", true);
     }
+	
+	public static boolean update(Player player) {
+            return permission(player, "mywarp.warp.basic.update", true);
+    }
 
     public static int maxPrivateWarps(Player player) {
         return WarpSettings.maxPrivate;
@@ -138,3 +142,4 @@ public class WarpPermissions {
             return permission(player, "mywarp.warp.sign.create", true);
     }
 }
+

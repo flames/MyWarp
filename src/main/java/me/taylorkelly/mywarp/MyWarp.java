@@ -345,7 +345,19 @@ public class MyWarp extends JavaPlugin {
                     }
 
                     warpList.uninvite(name, player, inviteeName);
-
+ 
+		  		   /**
+                     * /warp update <name>
+                     */
+                } else if (split.length > 1 && split[0].equalsIgnoreCase("update") && WarpPermissions.update(player)) {
+					String name = "";
+                    for (int i = 1; i < split.length; i++) {
+                        name += split[i];
+                        if (i + 1 < split.length) {
+                            name += " ";
+                        }
+                    }
+                    warpList.updatePosition(name, player);
                     /**
                      * /warp player <player> <name>
                      */
@@ -414,6 +426,10 @@ public class MyWarp extends JavaPlugin {
                     if (WarpPermissions.canPrivate(player)) {
                         messages.add(ChatColor.RED + "/warp private [name]" + ChatColor.WHITE + "  -  Makes warp " + ChatColor.GRAY + "[name]"
                                 + ChatColor.WHITE + " private");
+                    }
+                    if (WarpPermissions.update(player)) {
+                        messages.add(ChatColor.RED + "/warp update [name]" + ChatColor.WHITE + "  -  Updates warp " + ChatColor.GRAY + "[name]"
+                                + ChatColor.WHITE + " to your position");
                     }
                     for (String message : messages) {
                         player.sendMessage(message);
