@@ -32,7 +32,7 @@ public class Updater {
 
 	private Logger logger = Logger.getLogger("Minecraft");
 
-	private final static String UPDATE_SITE = "http://procrafter.de/downloads/";
+	private final static String UPDATE_SITE = "https://raw.github.com/mung3r/MyWarp/master/";
 
 	private List<UpdaterFile> needsUpdating = new ArrayList<UpdaterFile>();
 

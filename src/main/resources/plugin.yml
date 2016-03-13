@@ -1,8 +1,98 @@
 name: MyWarp
-version: 2.0
-author: flames
+version: 2.2
+author: spathizilla
+authors:
+  - tkelly
+  - flames
+softdepend:
+  - Vault
 main: me.taylorkelly.mywarp.MyWarp
 commands:
   warp:
+    aliases: ['mywarp', 'mw']
     description: All of the MyWarp commands
     usage: /<command> help - Displays the help for MyWarp
+permissions:
+  mywarp.admin:
+    description: Admin
+    default: op
+  mywarp.warp.basic.warp:
+    description: Usage of /warp
+    default: op
+  mywarp.warp.basic.delete:
+    description: Can delete warps
+    default: op
+  mywarp.warp.basic.list:
+    description: Can list warps
+    default: op
+  mywarp.warp.basic.welcome:
+    description: Can change the welcome message
+    default: op
+  mywarp.warp.basic.search:
+    description: Can search for a warp
+    default: op
+  mywarp.warp.basic.createprivate:
+    description: Allowed to create private warps
+    default: op
+  mywarp.warp.basic.createpublic:
+    description: Allowed to create public warps
+    default: op
+  mywarp.warp.basic.compass:
+    description: Compass can be used
+    default: op
+  mywarp.warp.soc.give:
+    description: Can give to your /warp
+    default: op
+  mywarp.warp.soc.invite:
+    description: Can invite to your /warp
+    default: op
+  mywarp.warp.soc.uninvite:
+    description: Can uninvite people from your /warp
+    default: op
+  mywarp.warp.soc.public:
+    description: Allow anyone to use your /warp
+    default: op
+  mywarp.warp.soc.private:
+    description: Disallow anyone to use your /warp
+    default: op
+  mywarp.warp.sign.warp:
+    description: Can use sign warps
+    default: op
+  mywarp.warp.sign.create:
+    description: Can make sign warps
+    default: op
+  mywarp.warp.basic.*:
+    description: Basic /warp commands
+    children:
+      mywarp.warp.basic.warp: true
+      mywarp.warp.basic.delete: true
+      mywarp.warp.basic.list: true
+      mywarp.warp.basic.welcome: true
+      mywarp.warp.basic.search: true
+      mywarp.warp.basic.createprivate: true
+      mywarp.warp.basic.createpublic: true
+      mywarp.warp.basic.compass: true
+  mywarp.warp.soc.*:
+    description: Social /warp commands
+    children:
+      mywarp.warp.soc.give: true
+      mywarp.warp.soc.invite: true
+      mywarp.warp.soc.uninvite: true
+      mywarp.warp.soc.public: true
+      mywarp.warp.soc.private: true
+  mywarp.warp.sign.*:
+    description: All sign based warp permissions
+    children:
+      mywarp.warp.sign.warp: true
+      mywarp.warp.sign.create: true
+  mywarp.warp.*:
+    description: All user permissions
+    children:
+      mywarp.warp.soc.*: true
+      mywarp.warp.sign.*: true
+      mywarp.warp.basic.*: true
+  mywarp.*:
+    description: Full access
+    children:
+      mywarp.warp.*: true
+      mywarp.admin: true
